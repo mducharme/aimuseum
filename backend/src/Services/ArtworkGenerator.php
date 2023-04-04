@@ -17,7 +17,7 @@ class ArtworkGenerator
     {
         $this->config = $config;
         $this->toolsConfig = $toolsConfig;
-        $this->artworkDescriber = new ArtworkDescriber($toolsConfig['API_KEY_CHATGPT'], $toolsConfig['CHATGPT_PROMPT_CONFIG']);
+        $this->artworkDescriber = new ArtworkDescriber($toolsConfig['API_KEY_CHATGPT'], $toolsConfig['CHATGPT_PROMPT_CONFIG'], $toolsConfig['CHATGPT_MODEL']);
         $this->exifReader = new ExifReader();
         $this->imageOptimizer = new ImageOptimizer($toolsConfig['IMAGE_OPTIMIZATION_MODE'], $toolsConfig['API_KEY_TINYPNG']);
         $this->paletteExtractor = new PaletteExtractor();
