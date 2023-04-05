@@ -44,7 +44,7 @@ export default {
       }).format(date);
     },
     fullImageUrl() {
-      return 'http://localhost:9090/textures/' + this.artwork.id + '.png';
+      return process.env.VUE_APP_MUSEUM_ARTWORK_IMAGES + this.artwork.id + '.png';
     }
   },
   methods: {

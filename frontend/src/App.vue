@@ -23,7 +23,8 @@ export default {
       isLoading: true,
       modalOpen: false,
       artwork: {},
-      textures: {}
+      artworks: [],
+      textures: new Map()
     };
   },
   methods: {
@@ -35,13 +36,13 @@ export default {
     const vm = this;
 
     (async () => {
-      await setTimeout(()=>vm.isLoading=false, 1000)
+      await setTimeout(()=>vm.isLoading=false, 3500)
     })()
 
 
 
     // Settings
-    const numCubes = 8;//Math.floor( Math.random() * (25 - 10) ) + 10;
+    const numCubes = 7;//Math.floor( Math.random() * (25 - 10) ) + 10;
     console.log(numCubes + "cubes");
     const cubeSize = 50;
     const rotationSpeed = { x: 0.01, y: 0.01, z: 0.0 };
@@ -55,7 +56,9 @@ export default {
 
     const cubes = createCubes(numCubes, cubeSize);
     console.log(cubes.length+"cubes");
-    cubes.forEach(cube => scene.add(cube));
+    cubes.forEach(cube => {
+      scene.add(cube)
+    });
 
     const controls = getOrbitControls( camera, renderer );
 
@@ -63,13 +66,31 @@ export default {
     const initialZoom = getInitialZoom(camera, scene);
     camera.position.set( 0, 0, initialZoom+cubeSize );
 
-    loadTextureList('http://localhost:9090/api/texture_list.php', (files) => {
-      // Set up texture loader and texture folder path
-      const textureLoader = new THREE.TextureLoader();
-      const textureFolderPath = "http://localhost:9090/textures/"; // change this to your texture folder path
+    // Set up texture loader and texture folder path
+    const textureLoader = new THREE.TextureLoader();
+    const textures = new Map();
+    const setRandomTexture = function(material)
+    {
+      console.log(vm.artworks.length);
+      const randomTexture = vm.artworks[Math.floor(Math.random() * vm.artworks.length)];
+      if (textures.has(randomTexture)) {
+        material.map = textures.get(randomTexture);
+        material.needsUpdate = true;
+      } else {
+        textureLoader.load(randomTexture, (texture) => {
+          textures.set(randomTexture, texture);
+          material.map = texture;
+          material.needsUpdate = true;
+        });
+      }
+    }
 
-      // Create textures array by mapping the loaded filenames to their full paths
-      /*const*/ this.textures = files.map((filename) => textureFolderPath + filename);
+
+    loadTextureList(process.env.VUE_APP_MUSEUM_ARTWORK_LIST, (uuids) => {
+
+
+      // Create images array by mapping the loaded filenames to their full paths
+      this.artworks = uuids.map((filename) => process.env.VUE_APP_MUSEUM_ARTWORK_IMAGES + filename + '.png');
 
       cubes.forEach(cube => {
         cube.material.forEach(material => {
@@ -78,20 +99,21 @@ export default {
       });
 
 
+
       // Function to change texture for a given material after a random interval
-      function changeTextureWithRandomInterval(material) {
-        const textureChangeIntervalMin = 10000; // Minimum interval (in milliseconds)
-        const textureChangeIntervalMax = 30000; // Maximum interval (in milliseconds)
+      function changeTextureWithRandomInterval(material)
+      {
+        setRandomTexture(material);
+
+        const textureChangeIntervalMin = 25000; // Minimum interval (in milliseconds)
+        const textureChangeIntervalMax = 45000; // Maximum interval (in milliseconds)
         const randomInterval = Math.random() * (textureChangeIntervalMax - textureChangeIntervalMin) + textureChangeIntervalMin;
 
+        const callback = setRandomTexture;
         setTimeout(() => {
           // Randomly select a new texture for the material
-          const randomTexture = vm.textures[Math.floor(Math.random() * vm.textures.length)];
-          textureLoader.load(randomTexture, (texture) => {
-            material.map = texture;
-            material.needsUpdate = true;
-          });
 
+          callback(material);
           // Hide the loading screen
           //this.isLoading = false;
 
@@ -127,7 +149,7 @@ export default {
         const clickedCube = intersection.object;
         const clickedFace = intersection.face;
         const materialIndex = clickedFace.materialIndex;
-        //const textureFilename = this.textures[materialIndex];
+        //const textureFilename = this.images[materialIndex];
         const material = clickedCube.material[materialIndex];
         const source = material.map.source;
         const image = source.data;
@@ -159,10 +181,9 @@ export default {
       const match = textureFilename.match( /[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/i);
       const id = match[0];
 
-      fetch("http://localhost:9090/api/artwork_info.php?id="+id)
+      fetch(process.env.VUE_APP_MUSEUM_ARTWORK_DATA+id+'.json')
           .then((response) => response.json())
           .then(data => {
-            console.log(data);
             vm.artwork = data;
             vm.modalOpen = true;
           })
