@@ -1,6 +1,6 @@
 {
     "name": "locomotivemtl/aimuseum",
-    "description": "Ai-Generated Art Musuem.",
+    "description": "Ai-Generated Art Museum.",
     "type": "project",
     "autoload": {
         "psr-4": {
@@ -27,7 +27,7 @@
         "ext-apcu": "*"
     },
     "scripts": {
-        "serve": "php -S localhost:9090 -t public/"
+        "serve": "php -S localhost:9191 -t public/"
     },
     "require-dev": {
         "friendsofphp/php-cs-fixer": "^3.16"

@@ -1,8 +1,7 @@
 images/
 data/
-public/textures/
+public/images/
 config/config.php
-config/tools.php
 
 .idea
 vendor/

@@ -20,10 +20,29 @@ class S3Synchronizer
                 'secret' => $secret
             ]
         ]);
-        $this->concurrency = 20;
+        $this->concurrency = $concurrency;
     }
 
-    public function uploadToS3(string $localFolder, string $bucket, string $remoteFolder)
+    public function uploadFileToS3(string $localFile, string $bucket, string $s3Target, bool $isPublic)
+    {
+        // Upload the file to S3
+        try {
+            $options = [
+                'Bucket' => $bucket,
+                'Key' => $s3Target,
+                'SourceFile' => $localFile,
+            ];
+            if ($isPublic) {
+                $options['ACL'] = 'public-read';
+            }
+            $this->s3->putObject($options);
+            echo "File uploaded to S3!";
+        } catch (S3Exception $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+
+    public function uploadToS3(string $localFolder, string $bucket, string $remoteFolder, bool $isPublic)
     {
         $s3Folder = 's3://'.$bucket.'/'.$remoteFolder;
 
@@ -31,10 +50,12 @@ class S3Synchronizer
         try {
             $this->s3->registerStreamWrapper();
             $options = [
-                'params' => ['ACL' => 'public-read'],
                 'concurrency' => $this->concurrency,
                 'debug' => true
             ];
+            if ($isPublic) {
+                $options['params'] = ['ACL' => 'public-read'];
+            }
             $manager = new Transfer($this->s3, $localFolder, $s3Folder, $options);
             $manager->transfer();
             echo "Sync successful!";
@@ -57,6 +78,20 @@ class S3Synchronizer
             $manager = new Transfer($this->s3, $s3Folder, $localFolder, $options);
             $manager->transfer();
             echo "Sync successful!";
+        } catch (S3Exception $e) {
+            echo "Error: " . $e->getMessage();
+        }
+    }
+    public function downloadFileFromS3($bucket, $remoteFile, $localFile)
+    {
+        // Download the file from S3
+        try {
+            $result = $this->s3->getObject([
+                'Bucket' => $bucket,
+                'Key' => $remoteFile,
+                'SaveAs' => $localFile,
+            ]);
+            echo "File downloaded from S3!";
         } catch (S3Exception $e) {
             echo "Error: " . $e->getMessage();
         }

@@ -7,13 +7,13 @@ use RecursiveIteratorIterator;
 
 class DataCleaner
 {
-    public function removeDataFilesWithoutTextures(string $dataDir, string $texturesDir): void
+    public function removeDataFilesWithoutImages(string $dataDir, string $texturesDir): void
     {
         $texturesUuids = $this->getUuidsFromDirectory($texturesDir, 'png');
         $this->removeFilesWithoutMatchingUuid($dataDir, $texturesUuids, 'json');
     }
 
-    public function removeTexturesFilesWithoutData(string $dataDir, string $texturesDir): void
+    public function removeImagesFilesWithoutData(string $dataDir, string $texturesDir): void
     {
         $dataUuids = $this->getUuidsFromDirectory($dataDir, 'json');
         $this->removeFilesWithoutMatchingUuid($texturesDir, $dataUuids, 'png');

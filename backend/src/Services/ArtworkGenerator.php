@@ -5,7 +5,6 @@ namespace AiMuseum\Services;
 class ArtworkGenerator
 {
     private array $config;
-    private array $toolsConfig;
     private ArtworkDescriber $artworkDescriber;
     private ExifReader $exifReader;
     private ImageOptimizer $imageOptimizer;
@@ -13,13 +12,12 @@ class ArtworkGenerator
     private UuidGenerator $uuidGenerator;
 
 
-    public function __construct(array $config, array $toolsConfig)
+    public function __construct(array $config)
     {
         $this->config = $config;
-        $this->toolsConfig = $toolsConfig;
-        $this->artworkDescriber = new ArtworkDescriber($toolsConfig['API_KEY_CHATGPT'], $toolsConfig['CHATGPT_PROMPT_CONFIG'], $toolsConfig['CHATGPT_MODEL']);
+        $this->artworkDescriber = new ArtworkDescriber($config['API_KEY_CHATGPT'], $config['CHATGPT_PROMPT_CONFIG'], $config['CHATGPT_MODEL']);
         $this->exifReader = new ExifReader();
-        $this->imageOptimizer = new ImageOptimizer($toolsConfig['IMAGE_OPTIMIZATION_MODE'], $toolsConfig['API_KEY_TINYPNG']);
+        $this->imageOptimizer = new ImageOptimizer($config['IMAGE_OPTIMIZATION_MODE'], $config['API_KEY_TINYPNG']);
         $this->paletteExtractor = new PaletteExtractor();
         $this->uuidGenerator = new UuidGenerator();
     }
@@ -50,7 +48,7 @@ class ArtworkGenerator
         $description = $this->artworkDescriber->generateDescription($data);
         $data += $description;
 
-        if ($this->toolsConfig['GENERATOR_REWRITE_DESCRIPTION'] === true) {
+        if ($this->config['GENERATOR_REWRITE_DESCRIPTION'] === true) {
 
             $description2 = $this->artworkDescriber->regenerateDescription($data);
             $data += $description2;
@@ -74,7 +72,7 @@ class ArtworkGenerator
 
     public function saveImageBackup($file, $uuid): void
     {
-        rename($file, $this->toolsConfig['FOLDER_PROCESSED'].'/'.$uuid.'.png');
+        rename($file, $this->config['FOLDER_PROCESSED'].'/'.$uuid.'.png');
     }
 
     public function saveMetadata($data, $uuid): void

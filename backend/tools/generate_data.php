@@ -5,12 +5,11 @@ use AiMuseum\Services\ArtworkGenerator;
 require __DIR__ . '/../vendor/autoload.php';
 
 $config = require __DIR__ . '/../config/config.php';
-$toolsConfig = require_once __DIR__ . '/../config/tools.php';
 
-$artworkGenerator = new ArtworkGenerator($config, $toolsConfig);
+$artworkGenerator = new ArtworkGenerator($config);
 
-$limit = $toolsConfig['GENERATOR_BATCH_LIMIT'];
-$files = glob($toolsConfig['FOLDER_QUEUE'] . '/*.png');
+$limit = $config['GENERATOR_BATCH_LIMIT'];
+$files = glob($config['FOLDER_QUEUE'] . '/*.png');
 foreach ($files as $file) {
     $limit--;
     if ($limit < 0) {
@@ -19,5 +18,5 @@ foreach ($files as $file) {
 
     $artworkGenerator->generateArtworkData($file);
 
-    sleep($toolsConfig['GENERATOR_BATCH_SLEEP_TIME']);
+    sleep($config['GENERATOR_BATCH_SLEEP_TIME']);
 }
