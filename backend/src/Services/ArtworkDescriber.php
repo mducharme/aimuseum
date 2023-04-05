@@ -12,7 +12,6 @@ class ArtworkDescriber
     private Client $client;
     private array $promptConfig;
     private string $model;
-    private array $headers;
 
     public function __construct(string $apiKey, array $promptConfig, $model = 'gpt-3.5-turbo')
     {

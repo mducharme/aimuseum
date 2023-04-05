@@ -4,6 +4,12 @@ return [
     'API_KEY_TINYPNG' => '',
     'API_KEY_CHATGPT' => '',
 
+    'S3_ACCESS_KEY' => '',
+    'S3_SECRET_KEY' => '',
+    'S3_REGION' => 'us-east-1',
+    'S3_PUBLIC_BUCKET' => '',
+    'S3_PRIVATE_BUCKET' => '', // Full file metadata
+
     'CHATGPT_MODEL' => 'gpt-3.5-turbo', // Use GPT4 for a better but slower model, if your API key enables it
 
     'CHATGPT_PROMPT_CONFIG' => [
@@ -53,11 +59,12 @@ return [
 
     'IMAGE_OPTIMIZATION_MODE' => 'none', // optipng, tiny or none
 
-    'FOLDER_QUEUE' => realpath(__DIR__ . '/../images/pending/'),
-    'FOLDER_PROCESSED' => realpath(__DIR__ . '/../images/originals/'), // Keep backup of originals,
+    'FOLDER_QUEUE' => realpath(__DIR__ . '/../images/queue/'),
+    'FOLDER_PROCESSED' => realpath(__DIR__ . '/../images/processed/'), // Keep backup of originals,
+    'FOLDER_PUBLIC_DATA' => realpath(__DIR__ . '/../public/data/'),
 
     'GENERATOR_REWRITE_DESCRIPTION' => false, // Ask for a rewrite (2nd description) after generating a description
 
     'GENERATOR_BATCH_LIMIT' => 10,
-    'GENERATOR_BATCH_SLEEPTIME' => 2
+    'GENERATOR_BATCH_SLEEP_TIME' => 2
 ];

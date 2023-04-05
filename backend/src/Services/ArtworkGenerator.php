@@ -56,29 +56,39 @@ class ArtworkGenerator
             $data += $description2;
         }
 
-        $this->saveTexture($file, $data['id']);
-        $this->saveTextureBackup($file, $data['id']);
-        $this->saveData($data, $data['id']);
+        $this->saveImage($file, $data['id']);
+        $this->saveImageBackup($file, $data['id']);
+        $this->saveMetadata($data, $data['id']);
+        $this->savePublicData($data, $data['id']);
     }
 
-    public function saveTexture($file, $uuid): void
+    public function saveImage($file, $uuid): void
     {
-        $targetTextureFile = $this->config['FOLDER_TEXTURES'] . '/' . $uuid . '.png';
+        $targetTextureFile = $this->config['FOLDER_IMAGES'] . '/' . $uuid . '.png';
         if (copy($file, $targetTextureFile)) {
             $this->imageOptimizer->optimize($targetTextureFile);
         } else {
-            throw new \Exception(sprintf('Copy file %s to textures failed.', $file));
+            throw new \Exception(sprintf('Copy file %s to public images failed.', $file));
         }
     }
 
-    public function saveTextureBackup($file, $uuid): void
+    public function saveImageBackup($file, $uuid): void
     {
         rename($file, $this->toolsConfig['FOLDER_PROCESSED'].'/'.$uuid.'.png');
     }
 
-    public function saveData($data, $uuid): void
+    public function saveMetadata($data, $uuid): void
     {
         $json = json_encode($data, JSON_PRETTY_PRINT);
-        file_put_contents($this->config['FOLDER_DATA'] . '/' . $uuid . '.json', $json);
+        file_put_contents($this->config['FOLDER_METADATA'] . '/' . $uuid . '.json', $json);
+    }
+
+    public function savePublicData($data, $uuid): void
+    {
+        $allowed = ['id', 'created_at', 'title', 'description', 'tags', 'palette', 'seed'];
+        $publicData =  array_filter($data, fn($value, $key) => in_array($key, $allowed), ARRAY_FILTER_USE_BOTH);
+
+        $json = json_encode($publicData, JSON_PRETTY_PRINT);
+        file_put_contents($this->config['FOLDER_PUBLIC_DATA'] . '/' . $uuid . '.json', $json);
     }
 }

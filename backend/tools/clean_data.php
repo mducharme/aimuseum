@@ -6,12 +6,12 @@ use AiMuseum\Services\ImageOptimizer;
 use AiMuseum\Services\PaletteExtractor;
 use AiMuseum\Services\DataCleaner;
 
-global $FOLDER_TEXTURES;
-global $FOLDER_DATA;
+global $FOLDER_IMAGES;
+global $FOLDER_METADATA;
 
 require __DIR__ . '/../vendor/autoload.php';
 require_once __DIR__ . '/../config/config.php';
 
 $dataCleaner = new DataCleaner();
-$dataCleaner->removeDataFilesWithoutTextures($FOLDER_DATA, $FOLDER_TEXTURES);
-$dataCleaner->removeTexturesFilesWithoutData($FOLDER_DATA, $FOLDER_TEXTURES);
+$dataCleaner->removeDataFilesWithoutTextures($FOLDER_METADATA, $FOLDER_IMAGES);
+$dataCleaner->removeTexturesFilesWithoutData($FOLDER_METADATA, $FOLDER_IMAGES);

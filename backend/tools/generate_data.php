@@ -19,5 +19,5 @@ foreach ($files as $file) {
 
     $artworkGenerator->generateArtworkData($file);
 
-    sleep($toolsConfig['GENERATOR_BATCH_SLEEPTIME']);
+    sleep($toolsConfig['GENERATOR_BATCH_SLEEP_TIME']);
 }

@@ -5,6 +5,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Slim\Factory\AppFactory;
 
+header('Access-Control-Allow-Origin', '*');
 /* If using PHP's built-in server, return false to skip existing files on the filesystem. */
 if (PHP_SAPI === 'cli-server') {
     $file = __DIR__ . preg_replace('#(\?.*)$#', '', $_SERVER['REQUEST_URI']);
@@ -19,9 +20,9 @@ $app = AppFactory::create();
 
 $config = require __DIR__ . '/../config/config.php';
 
-$app->get('/artworks', function (Request $request, Response $response, $args) use ($config) {
+$app->get('/artworks.json', function (Request $request, Response $response, $args) use ($config) {
 
-    $artworkLoader = new ArtworkLoader($config['FOLDER_DATA']);
+    $artworkLoader = new ArtworkLoader($config['FOLDER_METADATA']);
     $artworks = $artworkLoader->getListAll();
 
     // Convert the artworks array to JSON and return it in the response body
@@ -32,13 +33,13 @@ $app->get('/artworks', function (Request $request, Response $response, $args) us
         ->withHeader('Expires', gmdate('D, d M Y H:i:s', time() + $config['CACHE_BROWSER_ARTWORK_LIST_TTL']) . ' GMT');
 });
 
-$app->get('/artwork/{id}', function (Request $request, Response $response, $args) use ($config) {
+$app->get('/artwork/{id}.json', function (Request $request, Response $response, $args) use ($config) {
     $id = filter_var($args['id'], FILTER_SANITIZE_STRING);
     if (empty($id) || preg_match('/[^\w\-.]/', $id)) {
         return $response->withStatus(404);
     }
 
-    $artworkLoader = new ArtworkLoader($config['FOLDER_DATA']);
+    $artworkLoader = new ArtworkLoader($config['FOLDER_METADATA']);
     $artwork = $artworkLoader->getPublicData($id);
     $response->getBody()->write(json_encode($artwork));
     return $response

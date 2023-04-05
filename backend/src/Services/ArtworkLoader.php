@@ -71,8 +71,7 @@ class ArtworkLoader
             return null;
         }
 
-        return array_filter($data, function ($value, $key) {
-            return in_array($key, ['id', 'created_at', 'title', 'description', 'tags', 'palette', 'seed']);
-        }, ARRAY_FILTER_USE_BOTH);
+        $allowed = ['id', 'created_at', 'title', 'description', 'tags', 'palette', 'seed'];
+        return array_filter($data, fn($value, $key) => in_array($key, $allowed), ARRAY_FILTER_USE_BOTH);
     }
 }

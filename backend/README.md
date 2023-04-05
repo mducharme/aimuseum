@@ -30,3 +30,29 @@ composer install
 - An API key from openapi.com is required to use ChatGPT.
   - To use the GPT-4 model, it must be enabled on the key. Not tested.
   - The default model is `gpt-3.5-turbo`.
+  - See config/tools.php for details.
+
+## Starting the backend
+
+> First make sure you copy and edit:
+> - `config/tools.sample.php` to `config/tools.php`
+> - `config/config.sample.php` to `config/config.php`
+
+To start development server on http://localhost:9090
+
+```
+composer serve
+```
+
+## Generating the artwork data
+
+Place Stable-Diffusion generated PNG files in the queue folder (default is `images/queue/`).
+
+Then run 
+```
+php tools/generate_data.php
+``` 
+to generate their meta information from various tools like ChatGPT.
+The resulting optimized textures will be in `public/textures/`, the private metadata in `data/` and a copy of the original files (with EXIF data intact) in `images/originals`
+
+> All those folders can be changed in the config files.
